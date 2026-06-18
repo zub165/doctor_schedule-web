@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024px" height="1024px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+   <rect width="1024" height="1024" rx="225" fill="#2F80ED"/>
+   <g transform="translate(150, 150)" fill="#FFFFFF">
+      <!-- Calendar Icon -->
+      <rect x="100" y="130" width="624" height="624" rx="40" stroke="#FFFFFF" stroke-width="40" fill="none"/>
+      
+      <!-- Calendar Lines -->
+      <line x1="100" y1="260" x2="724" y2="260" stroke="#FFFFFF" stroke-width="30"/>
+      
+      <!-- Calendar Days -->
+      <circle cx="225" cy="360" r="45" fill="#FFFFFF"/>
+      <circle cx="375" cy="360" r="45" fill="#FFFFFF"/>
+      <circle cx="525" cy="360" r="45" fill="#FFFFFF"/>
+      
+      <circle cx="225" cy="490" r="45" fill="#FFFFFF"/>
+      <circle cx="375" cy="490" r="45" fill="#FFFFFF"/>
+      <circle cx="525" cy="490" r="45" fill="#FFFFFF"/>
+      
+      <circle cx="225" cy="620" r="45" fill="#FFFFFF"/>
+      <circle cx="375" cy="620" r="45" fill="#FFFFFF"/>
+      <circle cx="525" cy="620" r="45" fill="#FFFFFF"/>
+      
+      <!-- Plus Symbol (Medical Cross) -->
+      <rect x="280" y="30" width="60" height="230" rx="20" fill="#FFFFFF"/>
+      <rect x="195" y="115" width="230" height="60" rx="20" fill="#FFFFFF"/>
+   </g>
+</svg> 

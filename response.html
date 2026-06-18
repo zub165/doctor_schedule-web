@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Response</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --success: #2ecc71;
+            --bg-color: #f5f7fa;
+            --text-color: #2c3e50;
+            --border-color: #e1e8ef;
+            --card-bg: white;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .response-container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            color: var(--text-color);
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+
+        .date-range-group {
+            background: var(--bg-color);
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .date-range-group h3 {
+            color: var(--text-color);
+            margin: 0 0 20px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .success-message {
+            text-align: center;
+            color: var(--success);
+            font-size: 18px;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 12px;
+            border: 1px solid var(--success);
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Modern tab styles */
+        .response-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: var(--bg-color);
+            padding: 8px;
+            border-radius: 16px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            background: transparent;
+            color: var(--text-color);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            position: relative;
+            overflow: hidden;
+            opacity: 0.7;
+        }
+
+        .tab-button::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        .tab-button.active {
+            opacity: 1;
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .response-container {
+                padding: 25px;
+                margin: 15px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .tab-button {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+
+            .date-range-group {
+                padding: 20px;
+            }
+        }
+
+        /* Update response styles */
+        .responses-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid var(--border-color);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .responses-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .response-list {
+            background: var(--bg-color);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .response-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            animation: slideIn 0.3s ease-out;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .response-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .response-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .response-date {
+            font-size: 0.95em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .response-location {
+            display: inline-block;
+            padding: 5px 12px;
+            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .no-responses {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            font-style: italic;
+            display: none;
+        }
+
+        /* Add loading animation */
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        .redirect-message {
+            margin-top: 15px;
+            color: #666;
+            font-style: italic;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cancel-redirect-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .cancel-redirect-btn:hover {
+            background: #c0392b;
+        }
+
+        .redirect-cancelled {
+            color: #27ae60;
+            font-weight: 500;
+        }
+
+        .go-home-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .go-home-btn:hover {
+            background: #2980b9;
+        }
+
+        #countdown {
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBEtGTY5H210uZafIE1_foqe8ACwLN8aGo",
+            authDomain: "schedule-manager-5e9c3.firebaseapp.com",
+            databaseURL: "https://schedule-manager-5e9c3-default-rtdb.firebaseio.com",
+            projectId: "schedule-manager-5e9c3",
+            storageBucket: "schedule-manager-5e9c3.firebasestorage.app",
+            messagingSenderId: "517339603872",
+            appId: "1:517339603872:web:903bc9043f07ffb0e5bac5"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Make Firebase functions available globally
+        window.db = db;
+        window.dbRef = ref;
+        window.dbSet = set;
+        window.dbOnValue = onValue;
+
+        // Test database connection
+        const testRef = ref(db, 'test');
+        set(testRef, { status: 'connected', timestamp: new Date().toISOString() })
+            .then(() => {
+                console.log('Firebase connected successfully');
+                // Initialize the page after Firebase is ready
+                window.initializeRequest();
+            })
+            .catch(error => {
+                console.error('Firebase connection error:', error);
+                alert('Error connecting to database. Please refresh the page.');
+            });
+    </script>
+</head>
+<body>
+    <div class="response-container">
+        <h1>Schedule Response</h1>
+        
+        <!-- Update the tab buttons -->
+        <div class="response-tabs">
+            <button type="button" class="tab-button active" onclick="switchTab('duty')" id="dutyTabBtn">Duty Request</button>
+            <button type="button" class="tab-button" onclick="switchTab('timeoff')" id="timeOffTabBtn">Time Off Request</button>
+        </div>
+
+        <form id="responseForm" onsubmit="submitResponse(event)">
+            <div class="form-group">
+                <label for="name">Your Name:</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div id="dutyFields" class="tab-content active">
+                <div class="form-group">
+                    <label for="location">Preferred Location:</label>
+                    <select id="location" required>
+                        <option value="">Select Location</option>
+                        <option value="MCH1">MCH1</option>
+                        <option value="MCH2">MCH2</option>
+                        <option value="MDH">MDH</option>
+                        <option value="BAH">BAH</option>
+                        <option value="MPH">MPH</option>
+                    </select>
+                </div>
+
+                <div class="date-range-group">
+                    <h3>Duty Date Range</h3>
+                    <div class="form-group">
+                        <label for="dutyStartDate">From:</label>
+                        <input type="date" id="dutyStartDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dutyEndDate">To:</label>
+                        <input type="date" id="dutyEndDate" required>
+                    </div>
+                </div>
+            </div>
+
+            <div id="timeOffFields" class="tab-content">
+                <div class="date-range-group">
+                    <h3>Time Off Date Range</h3>
+                    <div class="form-group">
+                        <label for="timeOffStartDate">From:</label>
+                        <input type="date" id="timeOffStartDate" class="date-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="timeOffEndDate">To:</label>
+                        <input type="date" id="timeOffEndDate" class="date-input">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Submit Response</button>
+        </form>
+        <div id="successMessage" class="success-message">
+            Response submitted successfully!
+        </div>
+
+        <!-- Update the responses section -->
+        <div id="currentResponses" class="responses-section">
+            <h3>Current Responses</h3>
+            <div class="responses-container">
+                <div id="dutyResponses" class="response-list">
+                    <h4>Duty Assignments</h4>
+                    <div id="dutyResponsesList"></div>
+                    <div class="no-responses" id="noDutyResponses">No duty responses yet</div>
+                </div>
+                <div id="timeOffResponses" class="response-list">
+                    <h4>Time Off Requests</h4>
+                    <div id="timeOffResponsesList"></div>
+                    <div class="no-responses" id="noTimeOffResponses">No time off responses yet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add this right after your Firebase script
+        function initializeRequest() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const requestId = urlParams.get('id') || 'test123'; // Fallback for testing
+                const requestType = urlParams.get('type') || 'duty'; // Fallback for testing
+
+                console.log('Request ID:', requestId);
+                console.log('Request Type:', requestType);
+                
+                // Make requestId available globally
+                window.requestId = requestId;
+
+                // Set initial form state based on request type
+                if (requestType === 'timeoff') {
+                    switchTab('timeoff');
+                } else {
+                    switchTab('duty');
+                }
+
+                // Set minimum dates
+                const today = new Date().toISOString().split('T')[0];
+                document.querySelectorAll('input[type="date"]').forEach(input => {
+                    input.min = today;
+                });
+
+                // Display existing responses
+                displayResponses();
+            } catch (error) {
+                console.error('Error in initializeRequest:', error);
+                alert('Error initializing page: ' + error.message);
+            }
+        }
+
+        function validateDateRange(startDate, endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const maxRange = new Date();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            maxRange.setMonth(maxRange.getMonth() + 6);
+
+            if (end < start) {
+                alert('End date cannot be before start date');
+                return false;
+            }
+
+            if (start < today) {
+                alert('Start date cannot be in the past');
+                return false;
+            }
+
+            if (end > maxRange) {
+                alert('Cannot schedule more than 6 months in advance');
+                return false;
+            }
+
+            // Check for maximum range
+            const daysDiff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            if (daysDiff > 14) {
+                alert('Date range cannot exceed 14 days');
+                return false;
+            }
+
+            return true;
+        }
+
+        function checkDateOverlap(startDate, endDate, name) {
+            try {
+                const schedule = JSON.parse(localStorage.getItem('schedule') || '{}');
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+
+                // Check each day in the range
+                for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
+                    const dateStr = date.toISOString().split('T')[0];
+                    
+                    // Check all locations for duty assignments
+                    const locations = ['MCH1', 'MCH2', 'MDH', 'BAH', 'MPH'];
+                    for (const loc of locations) {
+                        const key = `${dateStr}_${loc}`;
+                        if (schedule[key] && schedule[key] === name) {
+                            return true;
+                        }
+                    }
+                    
+                    // Check time off
+                    const timeOffKey = `${dateStr}_timeoff`;
+                    if (schedule[timeOffKey] && schedule[timeOffKey] === name) {
+                        return true;
+                    }
+                }
+                
+                return false;
+            } catch (error) {
+                console.error('Error checking date overlap:', error);
+                return true; // Return true to prevent scheduling on error
+            }
+        }
+
+        function switchTab(tabName) {
+            try {
+                // Update buttons
+                const dutyBtn = document.getElementById('dutyTabBtn');
+                const timeOffBtn = document.getElementById('timeOffTabBtn');
+                
+                if (tabName === 'timeoff') {
+                    timeOffBtn.classList.add('active');
+                    dutyBtn.classList.remove('active');
+                    document.getElementById('dutyFields').style.display = 'none';
+                    document.getElementById('timeOffFields').style.display = 'block';
+                    
+                    // Update required fields
+                    document.getElementById('timeOffStartDate').required = true;
+                    document.getElementById('timeOffEndDate').required = true;
+                    document.getElementById('location').required = false;
+                    document.getElementById('dutyStartDate').required = false;
+                    document.getElementById('dutyEndDate').required = false;
+                } else {
+                    dutyBtn.classList.add('active');
+                    timeOffBtn.classList.remove('active');
+                    document.getElementById('timeOffFields').style.display = 'none';
+                    document.getElementById('dutyFields').style.display = 'block';
+                    
+                    // Update required fields
+                    document.getElementById('timeOffStartDate').required = false;
+                    document.getElementById('timeOffEndDate').required = false;
+                    document.getElementById('location').required = true;
+                    document.getElementById('dutyStartDate').required = true;
+                    document.getElementById('dutyEndDate').required = true;
+                }
+
+                console.log('Switched to tab:', tabName);
+            } catch (error) {
+                console.error('Error switching tabs:', error);
+            }
+        }
+
+        function handleError(error, message = 'An error occurred. Please try again.') {
+            console.error('Error:', error);
+            alert(message);
+            return false;
+        }
+
+        function validateForm(requestType) {
+            const name = document.getElementById('name').value.trim();
+            if (!name) {
+                alert('Please enter your name');
+                return false;
+            }
+
+            if (requestType === 'duty') {
+                const location = document.getElementById('location').value;
+                const startDate = document.getElementById('dutyStartDate').value;
+                const endDate = document.getElementById('dutyEndDate').value;
+
+                if (!location || !startDate || !endDate) {
+                    alert('Please fill in all duty request fields');
+                    return false;
+                }
+            } else {
+                const startDate = document.getElementById('timeOffStartDate').value;
+                const endDate = document.getElementById('timeOffEndDate').value;
+
+                if (!startDate || !endDate) {
+                    alert('Please fill in all time off request fields');
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function submitResponse(event) {
+            event.preventDefault();
+            console.log('Submitting response...');
+
+            const submitButton = document.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+
+            try {
+                const name = document.getElementById('name').value.trim();
+                if (!name) {
+                    alert('Please enter your name');
+                    return;
+                }
+
+                // Get form type from active tab
+                const formType = document.getElementById('timeOffTabBtn').classList.contains('active') ? 'timeoff' : 'duty';
+                console.log('Form type:', formType);
+
+                let response = {
+                    name: name,
+                    date: new Date().toISOString(),
+                    type: formType
+                };
+
+                if (formType === 'duty') {
+                    response.startDate = document.getElementById('dutyStartDate').value;
+                    response.endDate = document.getElementById('dutyEndDate').value;
+                    response.location = document.getElementById('location').value;
+
+                    if (!response.location || !response.startDate || !response.endDate) {
+                        alert('Please fill in all duty request fields');
+                        return;
+                    }
+                } else {
+                    response.startDate = document.getElementById('timeOffStartDate').value;
+                    response.endDate = document.getElementById('timeOffEndDate').value;
+
+                    if (!response.startDate || !response.endDate) {
+                        alert('Please fill in all time off request fields');
+                        return;
+                    }
+                }
+
+                // Save to Firebase
+                const responsePath = `responses/${window.requestId}/${name.replace(/[.#$\/\[\]]/g, '_')}`;
+                console.log('Saving to path:', responsePath);
+                console.log('Response data:', response);
+
+                dbSet(dbRef(db, responsePath), response)
+                    .then(() => {
+                        console.log('Response saved successfully');
+                        document.getElementById('responseForm').style.display = 'none';
+                        const successMessage = document.getElementById('successMessage');
+                        successMessage.style.display = 'block';
+                        successMessage.innerHTML = `
+                            <div class="response-name">${name}</div>
+                            <div class="response-date">
+                                <div>Period: ${new Date(response.startDate).toLocaleDateString()} to ${new Date(response.endDate).toLocaleDateString()}</div>
+                                <div>${formType === 'duty' ? `Location: ${response.location}` : 'Time Off Request'}</div>
+                            </div>
+                            <div class="redirect-message">
+                                Redirecting to home page in <span id="countdown">10</span> seconds...
+                                <button onclick="cancelRedirect()" class="cancel-redirect-btn">Stay on this page</button>
+                            </div>
+                        `;
+                        displayResponses();
+                        startRedirectCountdown();
+                    })
+                    .catch(error => {
+                        console.error('Error saving to Firebase:', error);
+                        alert('Error saving your response. Please try again.');
+                    })
+                    .finally(() => {
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Submit Response';
+                    });
+
+            } catch (error) {
+                console.error('Error in submitResponse:', error);
+                alert('An unexpected error occurred. Please try again.');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Submit Response';
+            }
+        }
+
+        function displayResponses() {
+            try {
+                if (!window.requestId) {
+                    console.error('No requestId found');
+                    return;
+                }
+
+                console.log('Fetching responses for requestId:', window.requestId);
+                const responsesRef = dbRef(db, `responses/${window.requestId}`);
+                
+                dbOnValue(responsesRef, (snapshot) => {
+                    const responses = snapshot.val() || {};
+                    console.log('Received response data:', responses);
+                    
+                    const dutyResponsesList = document.getElementById('dutyResponsesList');
+                    const timeOffResponsesList = document.getElementById('timeOffResponsesList');
+                    
+                    // Clear existing responses
+                    dutyResponsesList.innerHTML = '';
+                    timeOffResponsesList.innerHTML = '';
+
+                    // Update response lists
+                    Object.entries(responses).forEach(([name, response]) => {
+                        const responseElement = document.createElement('div');
+                        responseElement.className = 'response-item';
+                        
+                        // Format dates
+                        const startDate = new Date(response.startDate).toLocaleDateString();
+                        const endDate = new Date(response.endDate).toLocaleDateString();
+                        const submittedDate = new Date(response.date).toLocaleDateString();
+                        
+                        if (response.type === 'duty') {
+                            responseElement.innerHTML = `
+                                <div class="response-name">${name}</div>
+                                <div class="response-date">
+                                    <div>Period: ${startDate} to ${endDate}</div>
+                                    <div>Submitted: ${submittedDate}</div>
+                                </div>
+                                <div class="response-location">${response.location}</div>
+                            `;
+                            dutyResponsesList.appendChild(responseElement);
+                        } else {
+                            responseElement.innerHTML = `
+                                <div class="response-name">${name}</div>
+                                <div class="response-date">
+                                    <div>Period: ${startDate} to ${endDate}</div>
+                                    <div>Submitted: ${submittedDate}</div>
+                                </div>
+                                <div class="response-location">Time Off</div>
+                            `;
+                            timeOffResponsesList.appendChild(responseElement);
+                        }
+                    });
+
+                    // Show/hide "no responses" messages
+                    document.getElementById('noDutyResponses').style.display = 
+                        dutyResponsesList.children.length ? 'none' : 'block';
+                    document.getElementById('noTimeOffResponses').style.display = 
+                        timeOffResponsesList.children.length ? 'none' : 'block';
+                });
+
+            } catch (error) {
+                console.error('Error in displayResponses:', error);
+            }
+        }
+
+        // Add this at the start of the script
+        function debugStorage() {
+            console.log('Current emailRequests:', JSON.parse(localStorage.getItem('emailRequests') || '{}'));
+            console.log('Current schedule:', JSON.parse(localStorage.getItem('schedule') || '{}'));
+        }
+
+        function cancelRedirect() {
+            if (window.redirectInterval) {
+                clearInterval(window.redirectInterval);
+                const redirectMessage = document.querySelector('.redirect-message');
+                redirectMessage.innerHTML = `
+                    <span class="redirect-cancelled">Redirect cancelled</span>
+                    <button onclick="window.location.href='index.html'" class="go-home-btn">Go to home page</button>
+                `;
+            }
+        }
+
+        function startRedirectCountdown() {
+            let timeLeft = 10;
+            const countdownElement = document.getElementById('countdown');
+            const countdownInterval = setInterval(() => {
+                timeLeft--;
+                countdownElement.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    window.location.href = 'index.html';
+                }
+            }, 1000);
+
+            // Store interval ID to be able to cancel it
+            window.redirectInterval = countdownInterval;
+        }
+    </script>
+</body>
+</html> 
